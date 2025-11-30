@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app-riyadh
+  namespace: argocd
+spec:
+  project: default
+  
+  # Source: Your Git repository this is my own.
+  source:
+    repoURL: https://github.com/a-harbi/multi-region-k8s
+    targetRevision: main        # Which branch to watch
+    path: clusters/sa-riyadh-1   # Which folder has the manifests
+  
+  # Destination: sa-riyadh-1 cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  # Sync policy: automatic
+  syncPolicy:
+    automated:
+      prune: true       # Delete old stuff not in Git anymore
+      selfHeal: true   # Fix if someone manually changes things
+      allowEmpty: false   # Don't delete everything if folder is empty
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 5   # Try  to 5 times if sync fails
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

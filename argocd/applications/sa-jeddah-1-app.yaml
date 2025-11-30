@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app-jeddah
+  namespace: argocd
+spec:
+  project: default
+  
+  # Source: Your Git repository this is my own. 
+  source:
+    repoURL: https://github.com/a-harbi/multi-region-k8s
+    targetRevision: main
+    path: clusters/sa-jeddah-1
+  
+  # Destination: sa-jeddah-1 cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  # Sync policy: automatic
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
