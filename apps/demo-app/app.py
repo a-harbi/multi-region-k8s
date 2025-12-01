@@ -6,12 +6,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-     # Returns cluster info to verify load balancing across regions.
+    """Main endpoint - returns cluster and pod info"""
     return jsonify({
-        'message': 'Hello from HA Kubernetes Platform!',
-        'hostname': socket.gethostname(),  # Hostname shows which pod handled the request.
+        'message': ' Hello from Saudi Arabia HA Platform! 🇸🇦',
+        'hostname': socket.gethostname(),
         'cluster': os.getenv('CLUSTER_NAME', 'unknown'),
-        'version': 'v1.0'
+        'version': 'v2.0',
+        'gitops': 'ArgoCD Auto-Deployed! '
     })
 
 @app.route('/health')
