@@ -4,8 +4,7 @@ import os
 
 app = Flask(__name__)
 
-HTML_TEMPLATE = """
-<!DOCTYPE html>
+HTML_TEMPLATE = """<!DOCTYPE html>
 <html>
 <head>
     <title>HA Platform</title>
@@ -60,8 +59,7 @@ HTML_TEMPLATE = """
         </div>
     </div>
 </body>
-</html>
-"""
+</html>"""
 
 @app.route('/')
 def home():
