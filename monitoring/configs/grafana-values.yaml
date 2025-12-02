@@ -1,0 +1,106 @@
+persistence:
+  enabled: false
+
+adminPassword: admin123
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server.monitoring.svc.cluster.local
+      access: proxy
+      isDefault: true
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
+
+dashboards:
+  default:
+    ha-platform:
+      json: |
+        {
+          "dashboard": {
+            "title": "HA Platform - Cluster Monitoring",
+            "tags": ["kubernetes", "ha-platform"],
+            "timezone": "browser",
+            "panels": [
+              {
+                "id": 1,
+                "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+                "type": "stat",
+                "title": "Total Pods Running",
+                "targets": [{
+                  "expr": "count(kube_pod_info{namespace=\"default\"})"
+                }],
+                "options": {
+                  "textMode": "value_and_name",
+                  "colorMode": "background"
+                }
+              },
+              {
+                "id": 2,
+                "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+                "type": "stat",
+                "title": "Demo App Pods",
+                "targets": [{
+                  "expr": "count(kube_pod_info{namespace=\"default\", pod=~\"demo-app.*\"})"
+                }],
+                "options": {
+                  "textMode": "value_and_name",
+                  "colorMode": "background"
+                }
+              },
+              {
+                "id": 3,
+                "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+                "type": "graph",
+                "title": "CPU Usage",
+                "targets": [{
+                  "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"demo-app.*\"}[5m])) by (pod)"
+                }]
+              },
+              {
+                "id": 4,
+                "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+                "type": "graph",
+                "title": "Memory Usage",
+                "targets": [{
+                  "expr": "sum(container_memory_working_set_bytes{pod=~\"demo-app.*\"}) by (pod)"
+                }]
+              },
+              {
+                "id": 5,
+                "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+                "type": "graph",
+                "title": "Network Traffic",
+                "targets": [{
+                  "expr": "sum(rate(container_network_receive_bytes_total{pod=~\"demo-app.*\"}[5m])) by (pod)"
+                }]
+              }
+            ],
+            "refresh": "10s",
+            "time": {"from": "now-1h", "to": "now"},
+            "timepicker": {"refresh_intervals": ["5s","10s","30s","1m","5m"]},
+            "version": 1
+          }
+        }
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

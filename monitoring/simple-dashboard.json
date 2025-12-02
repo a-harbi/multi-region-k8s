@@ -1,0 +1,40 @@
+{
+  "dashboard": {
+    "title": "HA Platform - Simple Monitoring",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "type": "graph",
+        "title": "Pods Running Over Time",
+        "targets": [{
+          "expr": "count(kube_pod_info{namespace=\"default\", pod=~\"demo-app.*\"}) by (pod)",
+          "legendFormat": "{{pod}}"
+        }]
+      },
+      {
+        "id": 2,
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "type": "graph",
+        "title": "CPU Usage",
+        "targets": [{
+          "expr": "rate(container_cpu_usage_seconds_total{pod=~\"demo-app.*\"}[5m])",
+          "legendFormat": "{{pod}}"
+        }]
+      },
+      {
+        "id": 3,
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "type": "graph",
+        "title": "Memory Usage (MB)",
+        "targets": [{
+          "expr": "container_memory_working_set_bytes{pod=~\"demo-app.*\"} / 1024 / 1024",
+          "legendFormat": "{{pod}}"
+        }]
+      }
+    ],
+    "refresh": "10s",
+    "time": {"from": "now-15m", "to": "now"},
+    "version": 1
+  }
+}

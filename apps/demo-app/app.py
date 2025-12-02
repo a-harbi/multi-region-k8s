@@ -9,6 +9,7 @@ HTML_TEMPLATE = """
 <html>
 <head>
     <title>HA Platform</title>
+    <meta http-equiv="refresh" content="3">
     <style>
         body {
             font-family: Arial, sans-serif;

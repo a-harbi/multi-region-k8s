@@ -1,0 +1,65 @@
+#!/bin/bash
+
+echo "=========================================="
+echo " Starting HA Platform"
+echo "=========================================="
+
+# Kill existing port-forwards
+echo "Cleaning up old port-forwards..."
+pkill -f "kubectl port-forward" 2>/dev/null
+sleep 2
+
+# 1. Start sa-riyadh-1 APP port-forward (8080)
+echo "Starting sa-riyadh-1 app on localhost:8080..."
+kubectl config use-context sa-riyadh-1
+nohup kubectl port-forward --address 0.0.0.0 service/demo-app-service 8080:80 > /tmp/riyadh-app-pf.log 2>&1 &
+sleep 2
+
+# 2. Start sa-jeddah-1 APP port-forward (8081)
+echo "Starting sa-jeddah-1 app on localhost:8081..."
+kubectl config use-context sa-jeddah-1
+nohup kubectl port-forward --address 0.0.0.0 service/demo-app-service 8081:80 > /tmp/jeddah-app-pf.log 2>&1 &
+sleep 2
+
+# 3. Start sa-riyadh-1 ARGOCD port-forward (9090)
+echo "Starting sa-riyadh-1 ArgoCD on localhost:9090..."
+kubectl config use-context sa-riyadh-1
+nohup kubectl port-forward --address 0.0.0.0 -n argocd service/argocd-server 9090:443 > /tmp/riyadh-argocd-pf.log 2>&1 &
+sleep 2
+
+# 4. Start sa-jeddah-1 ARGOCD port-forward (9091)
+echo "Starting sa-jeddah-1 ArgoCD on localhost:9091..."
+kubectl config use-context sa-jeddah-1
+nohup kubectl port-forward --address 0.0.0.0 -n argocd service/argocd-server 9091:443 > /tmp/jeddah-argocd-pf.log 2>&1 &
+sleep 2
+
+# 5. Restart HAProxy
+echo "Starting HAProxy on localhost:8888..."
+sudo systemctl restart haproxy
+sleep 2
+
+echo ""
+echo "=========================================="
+echo " All Services Started!"
+echo ""
+echo "  Your Access URLs:"
+echo ""
+echo "   Main Application (Load Balanced):"
+echo "     http://localhost:8888"
+echo ""
+echo "   Direct App Access:"
+echo "     Riyadh App:  http://localhost:8080"
+echo "     Jeddah App:  http://localhost:8081"
+echo ""
+echo "    ArgoCD Dashboards:"
+echo "     Riyadh ArgoCD: https://localhost:9090"
+echo "     Jeddah ArgoCD: https://localhost:9091"
+echo ""
+echo "   HAProxy Stats:"
+echo "     http://localhost:8404"
+echo "     (admin / admin123)"
+echo ""
+echo "=========================================="
+echo ""
+echo "To stop everything: pkill -f 'kubectl port-forward'"
+echo "=========================================="
