@@ -2,11 +2,11 @@
 
 clear
 echo "=========================================="
-echo "   🇸🇦 Saudi Arabia HA Platform 🇸🇦"
+echo "       Saudi Arabia HA Platform "
 echo "      Zero-Downtime Demonstration"
 echo "=========================================="
 echo ""
-echo "Presenter: [Your Name]"
+echo "Presenter: Abdulrahman Alharbi"
 echo "Project: High Availability Kubernetes Platform"
 echo "Duration: ~10 minutes"
 echo ""
